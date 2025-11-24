@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🛍️ ShopEase</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav>
+    <h2>🛍️ ShopEase</h2>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="cart.html">Cart</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+    </div>
+  </nav>
+
+  <h1>Welcome to ShopEase</h1>
+  <div id="product-list" class="product-container"></div>
+   <div id="cart-message" class="hidden">Added to cart!</div>
+
+  <script>
+  fetch("http://localhost:5000/api/products")
+    .then(res => res.json())
+    .then(products => {
+      const list = document.getElementById("product-list");
+      list.innerHTML = products.map(p => `
+        <div class="product">
+          <img src="${p.image}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p><strong>Brand:</strong> ${p.brand}</p>
+          <p>₹${p.price}</p>
+          <button onclick="addToCart('${p._id}', '${p.name}', ${p.price}, '${p.image}')">Add to Cart</button>
+          <button onclick="viewDetails('${p._id}')">View Details</button>
+        </div>
+      `).join("");
+    })
+    .catch(err => console.error("Error fetching products:", err));
+
+  function addToCart(id, name, price, image) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existing = cart.find(item => item.id === id);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ id, name, price, image, qty: 1 });
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+   showMessage(`${name} added to cart!`);
+
+  }
+  
+  function viewDetails(id) {
+    localStorage.setItem("selectedProductId", id);
+    window.location.href = "product.html";
+  }
+  function showMessage(text) {
+  const msg = document.getElementById("cart-message");
+  msg.textContent = text;
+  msg.classList.add("show");
+
+  setTimeout(() => {
+    msg.classList.remove("show");
+  }, 2000);
+}
+
+</script>
+
+
+</body>
+</html>
+

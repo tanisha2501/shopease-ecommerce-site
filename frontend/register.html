@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register | ShopEase</title>
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h2>Create Account 🛍️</h2>
+      <p class="subtitle">Join ShopEase and start shopping smart!</p>
+
+      <form id="registerForm">
+        <div class="input-group">
+          <label>Name</label>
+          <input type="text" id="name" placeholder="Enter your name" required />
+        </div>
+
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="Enter your email" required />
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Create a password" required />
+        </div>
+
+        <button type="submit" class="btn">Register</button>
+        <p class="switch">
+          Already have an account? <a href="login.html">Login</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      try {
+        const res = await fetch("http://localhost:5000/api/users/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("🎉 Registration successful! Please log in.");
+          window.location.href = "login.html"; // redirect to login page
+        } else {
+          alert(data.message || "Something went wrong.");
+        }
+      } catch (err) {
+        console.error("Register Error:", err);
+        alert("Error connecting to server.");
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+

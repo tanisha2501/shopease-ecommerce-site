@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🛒 Shopping Cart | ShopEase</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #f8f9fd;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background: #5a6cf3;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 50px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .navbar a {
+      color: white;
+      margin-left: 25px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .navbar a:hover,
+    .navbar a.active {
+      text-decoration: underline;
+      color: #d4e3ff;
+    }
+
+    .cart-container {
+      max-width: 850px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-container h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cart-item img {
+      width: 70px;
+      height: 70px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .info {
+      flex: 1;
+      margin-left: 20px;
+    }
+
+    .info h3 {
+      margin: 0;
+      color: #333;
+    }
+
+    .info p {
+      margin: 5px 0;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      background: #f0f0f0;
+      border-radius: 8px;
+      padding: 4px;
+      width: fit-content;
+    }
+
+    .qty-control button {
+      background: #5a6cf3;
+      color: white;
+      border: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .qty-control button:hover {
+      background: #3c4fd9;
+    }
+
+    .qty-control span {
+      margin: 0 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .remove {
+      background: #f44336;
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    .remove:hover {
+      background: #d32f2f;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+
+    /* ✅ Compact & Clean Total Bar */
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 30px;
+      margin: 40px auto;
+      width: 70%;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-total h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .checkout-btn {
+      background-color: white;
+      color: #4CAF50;
+      border: none;
+      padding: 10px 25px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .checkout-btn:hover {
+      background-color: #45a049;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .cart-total {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+      }
+      
+    }
+    
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <h2>🛍️ ShopEase</h2>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="cart.html" class="active">Cart</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+    </div>
+  </nav>
+
+  <div class="cart-container">
+    <h1>Your Shopping Cart 🛍️</h1>
+    <div id="cart-items"></div>
+  </div>
+
+  <!-- ✅ Clean total section -->
+  <div class="cart-total">
+    <h3>Total: <span id="totalPrice">₹0</span></h3>
+    <button class="checkout-btn" onclick="checkout()">Checkout</button>
+  </div>
+
+  <script>
+    const cartContainer = document.getElementById("cart-items");
+    const totalPriceEl = document.getElementById("totalPrice");
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function renderCart() {
+      cartContainer.innerHTML = "";
+      let total = 0;
+
+      if (cart.length === 0) {
+        cartContainer.innerHTML = `<p class="empty">Your cart is empty 🛒</p>`;
+        totalPriceEl.textContent = "₹0";
+        return;
+      }
+
+      cart.forEach((item, i) => {
+        total += item.price * item.qty;
+        const div = document.createElement("div");
+        div.classList.add("cart-item");
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="info">
+            <h3>${item.name}</h3>
+            <p>₹${item.price}</p>
+            <div class="qty-control">
+              <button onclick="decreaseQty(${i})">-</button>
+              <span>${item.qty}</span>
+              <button onclick="increaseQty(${i})">+</button>
+            </div>
+          </div>
+          <button class="remove" onclick="removeItem(${i})">Remove</button>
+        `;
+        cartContainer.appendChild(div);
+      });
+
+      totalPriceEl.textContent = `₹${total.toLocaleString()}`;
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function increaseQty(index) {
+      cart[index].qty++;
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function decreaseQty(index) {
+      if (cart[index].qty > 1) {
+        cart[index].qty--;
+      } else {
+        cart.splice(index, 1);
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function checkout() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login to proceed to checkout!");
+        window.location.href = "login.html";
+        return;
+      }
+      alert("✅ Checkout successful! Your order is placed.");
+      localStorage.removeItem("cart");
+      renderCart();
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>

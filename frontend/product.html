@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Details | ShopEase</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  
+
+
+  <!-- Navigation -->
+  <nav>
+    <h2>🛍️ ShopEase</h2>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="cart.html">Cart</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+    </div>
+  </nav>
+
+  <div id="product-details" class="product-detail-container"></div>
+
+  <script>
+    // Get selected product ID from localStorage
+    const productId = localStorage.getItem("selectedProductId");
+
+    if (!productId) {
+      document.getElementById("product-details").innerHTML = "<h3>No product selected!</h3>";
+    } else {
+      // Fetch product details from backend
+      fetch(`http://localhost:5000/api/products/${productId}`)
+        .then(res => res.json())
+        .then(p => {
+          const container = document.getElementById("product-details");
+          container.innerHTML = `
+            <div class="detail-card">
+              <img src="${p.image}" alt="${p.name}">
+              <div class="detail-info">
+                <h2>${p.name}</h2>
+                <p class="desc">${p.description}</p>
+                <h3>₹${p.price}</h3>
+                <button onclick="addToCart('${p._id}', '${p.name}', ${p.price}, '${p.image}')">Add to Cart</button>
+                <button onclick="window.location.href='index.html'">Back to Home</button>
+              </div>
+            </div>
+          `;
+        })
+        .catch(err => console.error("Error loading product:", err));
+    }
+
+    // Add product to cart (localStorage)
+    function addToCart(id, name, price, image) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ id, name, price, image, qty: 1 });
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(`${name} added to cart!`);
+    }
+  </script>
+
+</body>
+</html>
+
