@@ -12,13 +12,13 @@ JWT Authentication • REST API
 
 # ⚙️ Backend Setup
 1️⃣ Install dependencies
-**cd backend** 
-**npm install**
+- **cd backend** 
+- **npm install**
 
 2️⃣ Create .env
 
 3️⃣ Start Backend
-**npx nodemon server.js**
+- **npx nodemon server.js**
 
 # 🎨 Frontend Setup
-Use Live Server OR open index.html manually.
+- Use Live Server OR open index.html manually.
